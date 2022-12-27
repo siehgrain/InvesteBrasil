@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="jquery.datatables" Version="1.10.15" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\js\Plugins\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\js\Plugins\jquery-3.6.3.min.js" />
+  </ItemGroup>
+
+</Project>

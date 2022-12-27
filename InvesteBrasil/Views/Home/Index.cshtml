@@ -1,0 +1,99 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.1/css/jquery.dataTables.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.1/js/dataTables.bulma.min.js">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+<div class="text-center">
+    <div class="form-inline mx-auto">
+      <input type="text" id="symbol" placeholder="Nome da Empresa" class="form-control col-4">
+      <button onclick="Pesquisa()" class="btn btn-primary">Buscar</button>
+    </div>
+    <div class="datatables visually-hidden">
+        <table id="results">
+        <thead>
+            <tr>
+                <th>Codígo</th>
+                <th>Nome</th>
+                <th>Preço</th>
+                <th>Volume</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+    </div>
+    
+</div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js"></script>
+<script>
+    function Pesquisa() {
+        debugger
+        $('.datatables').removeClass("visually-hidden");
+        var text = $('#symbol').val();
+        params = {
+            keywords: text,
+        };
+        $.ajax({
+            url: '@Url.Action("Pesquisa","Home")',
+            data: params,
+            type: "POST",
+            success: function (data) {
+                displayResults(data);
+            }
+        });
+    }
+    function displayResults(data) {
+    var tableData = [];    
+    $.each(data.bestMatches, function (index, item) {
+        var symbol = item["1. symbol"];
+        var name = item["2. name"];
+        params = {
+            symbol: symbol,
+        };
+        $.ajax({
+            url: '@Url.Action("MostraPrecos","Home")',
+            data: params,
+            type: "POST",
+            success: function (data) {
+                var price = data["Global Quote"]["05. price"];
+                var volume = data["Global Quote"]["06. volume"];
+                tableData.push([symbol, name, price, volume]);
+                $('#results').DataTable().table().destroy();
+                $("#results").DataTable({
+                    data: tableData,
+                    columns: [
+                        { title: "Código" },
+                        { title: "Nome" },
+                        { title: "Preço" },
+                        { title: "Volume" },
+                    ],
+                    paging: true,
+                    pageLength: 10,
+                    dom: "<'row'<'col-sm-12'tr>><'row'<'col-sm-12'p>>"
+                });
+            }  
+        });
+    });
+    
+    }
+</script>
+<style>
+.center-table {
+    margin: 0 auto;
+}
+.center-table thead {
+display: none;
+}
+.center-table td {
+display: block;
+text-align: right;
+}
+.center-table td:before {
+content: attr(data-label);
+float: left;
+font-weight: bold;
+text-transform: uppercase;
+}
+</style>
+
